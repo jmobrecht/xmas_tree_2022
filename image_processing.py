@@ -18,10 +18,8 @@ def get_x_y(img, idx_x, idx_y, thr):
     return x, y
 
 folder = r'C:\Users\john.obrecht\Downloads'
-
 bkg = np.load(folder + os.sep + 'background.npy')  # Load picture (debugging)
 img = np.load(folder + os.sep + 'image.npy')  # Load picture (debugging)
-
 gB = cv2.cvtColor(bkg, cv2.COLOR_BGR2GRAY)
 gI = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -42,6 +40,8 @@ thr = 220
 
 x, y = get_x_y(gM, ind_x, ind_y, thr)
 gD[gD<thr] = 0
+
+#%%
 
 f, axarr = plt.subplots(2, 2)
 axarr[0, 0].imshow(gB, cmap='bone')
