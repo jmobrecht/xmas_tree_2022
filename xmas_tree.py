@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 from mpl_toolkits.mplot3d import Axes3D
 from fold.utils import set_axes_equal, get_tree_coords
-from fold.sequenc_utils import rainbow, moving_slice, falling_rain, spiral
+from fold.sequenc_utils import rainbow, moving_slice, falling_rain, spiral, cone_01, cone_02, blink_01
 
 # Get tree coordinates
 path = r'C:\Users\john.obrecht\Downloads\xmastree2020-main\coords.txt'
@@ -27,7 +27,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = spiral(tree, num_pts, num_frames)
+seq = blink_01(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01

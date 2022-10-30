@@ -14,7 +14,7 @@ def point(x, y, z, x0, y0, z0, sz, i):
     return np.exp(-(dist(x, y, z, x0, y0, z0, i))**2 / sz**2), 
 
 def sheet(z, z0, i):
-    return np.exp(-(z - z0[i])**2 / (0.01 * np.max(tree[:, 2]))**2)
+    return np.exp(-(z - z0[i])**2 / (0.01 * np.max(z))**2)
 
 
 def rx(th):
@@ -34,7 +34,7 @@ def rainbow(tree, num_pts, num_frames):
     color_map = cm.get_cmap('hsv', num_pts)
     seq = np.zeros([num_pts, 4, num_frames])
     seq[:, :, 0] = color_map(np.linspace(0, 1, num_pts))
-    for i in range(1, num_frames):
+    for i in range(num_frames):
         seq[:, :, i] = np.roll(seq[:, :, i-1], 1, axis=0)
     return seq
 
@@ -42,7 +42,7 @@ def rainbow(tree, num_pts, num_frames):
 def moving_slice(tree, num_pts, num_frames):
     z0 = np.linspace(1, 0, num_frames)
     seq = np.ones([num_pts, 4, num_frames])
-    for i in range(1, num_frames):
+    for i in range(num_frames):
         seq[:, 3, i] = np.round(sheet(tree[:, 2], z0, i))
     return seq
 
@@ -69,6 +69,40 @@ def spiral(tree, num_pts, num_frames):
     for i in range(num_frames):
         x0[i], y0[i], _ = np.dot(rz(t0[i]), [r0[i], 0, 0])
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    for i in range(1, num_frames):
+    for i in range(num_frames):
         seq[:, 3, i] = np.round(point(x_t, y_t, z_t, x0, y0, z0, 0.1, i))  # Only change col. 3 (alpha value)
     return seq
+
+# Illuminate points near to cone surface only
+def cone_01(tree, num_pts, num_frames):
+    def dist(r, z, r_sc):
+        return np.abs(r / r_sc + z - 1) / np.sqrt(1 + r_sc**-2)
+    r_sc = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
+    r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
+    d = dist(r, tree[:, 2], r_sc)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[d > 0.04, :, :] = 0
+    return seq
+
+# Alpha inversely proportional to distance to cone surface
+def cone_02(tree, num_pts, num_frames):
+    def dist(r, z, r_sc):
+        return np.abs(r / r_sc + z - 1) / np.sqrt(1 + r_sc**-2)
+    r_sc = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
+    r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
+    d = dist(r, tree[:, 2], r_sc)
+    a = 1 - d / np.max(d)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(num_frames):
+        seq[:, 3, i] = a
+    return seq
+
+# Blink all lights on / off
+def blink_01(tree, num_pts, num_frames):
+    blink = 25  # number of frames for on / off
+    filt = (np.mod(np.arange(num_frames), 2 * blink) < blink)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, :, filt] = 0* seq[:, :, filt]
+    return seq
+
+
