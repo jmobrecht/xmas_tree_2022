@@ -37,6 +37,16 @@ def wf_triangle(x, x0, w):
         y[left_2] = 1 + (x[left_2] - (x0 + 1)) / w
     return y
 
+def wf_decay(x, x0, tau):
+    y = np.zeros(np.shape(x))
+    y[x >= x0] = np.exp(-(x[x >= x0] - x0) / tau)
+    # Handling the continuity past x = 1    
+    x2 = x + 1
+    y2 = y.copy()
+    y2[x2 >= x0] = np.exp(-(x2[x2 >= x0] - x0) / tau)
+    y = np.max((y, y2), axis=0)   
+    return y
+
 def rx(th):
     th *= np.pi / 180
     return np.array([[1, 0, 0], [0, np.cos(th), np.sin(th)], [0, -np.sin(th), np.cos(th)]])
@@ -134,8 +144,19 @@ def breathe_01(tree, num_pts, num_frames):
         seq[:, 3, i] = (np.sin(2 * np.pi * i / period))**(2*p)  # Only change col. 3 (alpha value)
     return seq
 
-# def sparkle_01(tree, num_pts, num_frames):
-#     period = 200
-#     phase = np.random.random(num_pts) * 2 * np.pi
-    
+def sparkle_01(tree, num_pts, num_frames):
+    t = np.arange(0, num_frames)
+    phase = np.random.random(num_pts)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_triangle(t / num_frames, phase[i], 0.1)
+    return seq
+
+def sparkle_02(tree, num_pts, num_frames):
+    t = np.arange(0, num_frames)
+    phase = np.random.random(num_pts)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
+    return seq
     
