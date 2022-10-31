@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 from mpl_toolkits.mplot3d import Axes3D
 from fold.utils import set_axes_equal, get_tree_coords
-from fold.sequenc_utils import rainbow, moving_slice, falling_rain, spiral, cone_01, cone_02, blink_01
+from fold.sequenc_utils import rainbow, moving_slice, falling_rain, spiral, cone_01, cone_02, blink_01, breathe_01
 
 # Get tree coordinates
 path = r'C:\Users\john.obrecht\Downloads\xmastree2020-main\coords.txt'
@@ -27,7 +27,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = blink_01(tree, num_pts, num_frames)
+seq = breathe_01(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
@@ -47,3 +47,13 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
+
+#%%
+
+from scipy import signal
+import numpy as np
+import matplotlib.pyplot as plt
+from fold.sequenc_utils import wf_triangle
+t = np.linspace(0, 1, 500)
+triangle = wf_triangle(t, 0.05, 0.1)
+plt.plot(t, triangle)

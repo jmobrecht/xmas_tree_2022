@@ -4,8 +4,12 @@ Created on Sat Oct 29 23:07:53 2022 @author: john.obrecht
 
 import numpy as np
 from matplotlib import cm
+from scipy import signal
 
 ### Basic Functions
+
+def cosd(x):
+    return 2 * np.pi * x
 
 def dist(x, y, z, x0, y0, z0, i):
     return np.sqrt( (x - x0[i])**2 + (y - y0[i])**2 + (z - z0[i])**2)
@@ -16,6 +20,22 @@ def point(x, y, z, x0, y0, z0, sz, i):
 def sheet(z, z0, i):
     return np.exp(-(z - z0[i])**2 / (0.01 * np.max(z))**2)
 
+def wf_triangle(x, x0, w):
+    # Normal triangle
+    left = (x > x0 - w) & (x <= x0)
+    right = (x > x0) & (x < x0 + w)
+    y = np.zeros(np.shape(x))
+    y[left] = 1 + (x[left] - x0) / w
+    y[right] = 1 - (x[right] - x0) / w
+    # Triangle > 1 --- when triangle goes off screen right
+    if x0 + w > 1:
+        right_2 = (x < np.mod(x0 + w, 1))
+        y[right_2] = 1 - (x[right_2] - (x0 - 1)) / w
+    # Triangle < 0 -- when triangle goes off screen left
+    if x0 - w < 0:
+        left_2 = (x > np.mod(x0 - w, 1))
+        y[left_2] = 1 + (x[left_2] - (x0 + 1)) / w
+    return y
 
 def rx(th):
     th *= np.pi / 180
@@ -105,4 +125,17 @@ def blink_01(tree, num_pts, num_frames):
     seq[:, :, filt] = 0* seq[:, :, filt]
     return seq
 
+# Breathing Tree
+def breathe_01(tree, num_pts, num_frames):
+    period = 200
+    p = 4
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(num_frames):
+        seq[:, 3, i] = (np.sin(2 * np.pi * i / period))**(2*p)  # Only change col. 3 (alpha value)
+    return seq
 
+# def sparkle_01(tree, num_pts, num_frames):
+#     period = 200
+#     phase = np.random.random(num_pts) * 2 * np.pi
+    
+    
