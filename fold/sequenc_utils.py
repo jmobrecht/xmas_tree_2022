@@ -23,6 +23,10 @@ def point(x, y, z, x0, y0, z0, sz, i):
 def sheet(z, z0, i):
     return np.exp(-(z - z0[i])**2 / (0.01 * np.max(z))**2)
 
+def wf_gaussian(x, x0, sz):
+    return np.exp(-((x - x0)**2 / sz**2))
+
+# Triangle through time coordinates
 def wf_triangle(x, x0, w):
     # Normal triangle
     left = (x > x0 - w) & (x <= x0)
@@ -40,6 +44,7 @@ def wf_triangle(x, x0, w):
         y[left_2] = 1 + (x[left_2] - (x0 + 1)) / w
     return y
 
+# Decay through time coordinates
 def wf_decay(x, x0, tau):
     y = np.zeros(np.shape(x))
     y[x >= x0] = np.exp(-(x[x >= x0] - x0) / tau)
@@ -50,11 +55,24 @@ def wf_decay(x, x0, tau):
     y = np.max((y, y2), axis=0)   
     return y
 
-def wf_gaussian(x):
-    pass
+# Decay through spatial coordinates
+def wf_decay_2(x, x0, tau):
+    x0 = 360 - x0
+    y = np.zeros(np.shape(x0))
+    y[x <= x0] = np.exp((x - x0[x <= x0]) / tau)
+    # Handling the continuity past x = 1    
+    x2 = x0 + 360
+    y2 = y.copy()
+    y2[x <= x2] = np.exp((x - x2[x <= x2]) / tau)
+    y = np.max((y, y2), axis=0)  
+    return y[::-1]
 
-def wf_pulse(x):
-    pass
+def wf_pulse(x, xu, xl):
+    y = np.zeros(np.shape(xu))
+    y[(xu > x) & (x > xl)] = 1
+    y[(xu > x + 360) & (x + 360 > xl)] = 1  # Edge case
+    y[(xu > x - 360) & (x - 360 > xl)] = 1  # Edge case
+    return y
 
 def rx(th):
     th *= np.pi / 180
@@ -155,6 +173,7 @@ def breathe_01(tree, num_pts, num_frames):
         seq[:, 3, i] = (np.sin(2 * np.pi * i / period))**(2*p)  # Only change col. 3 (alpha value)
     return seq
 
+# Sparkle: Triangle wave
 def sparkle_01(tree, num_pts, num_frames):
     t = np.arange(0, num_frames)
     phase = np.random.random(num_pts)
@@ -163,6 +182,7 @@ def sparkle_01(tree, num_pts, num_frames):
         seq[i, 3, :] = wf_triangle(t / num_frames, phase[i], 0.1)
     return seq
 
+# Sparkle: Decay wave
 def sparkle_02(tree, num_pts, num_frames):
     t = np.arange(0, num_frames)
     phase = np.random.random(num_pts)
@@ -171,7 +191,7 @@ def sparkle_02(tree, num_pts, num_frames):
         seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
     return seq
 
-# Swirling Stripes: vertical stripes on, then rotate all
+# Swirling Stripes: hard-coded pulse waveform
 def swirl_01(tree, num_pts, num_frames):
     x_t, y_t = tree[:, 0], tree[:, 1]
     th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
@@ -186,4 +206,45 @@ def swirl_01(tree, num_pts, num_frames):
         upper, lower = lim_up[i], lim_dn[i]
         filt = (upper > th_t) | (th_t > lower) if lower > upper else (upper > th_t) & (th_t > lower)
         seq[filt, 3, i] = 1
+    return seq
+
+# Swirling Stripes: pulse waveform
+def swirl_02(tree, num_pts, num_frames):
+    x_t, y_t = tree[:, 0], tree[:, 1]
+    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    num_stripes = 6
+    span = 360 / num_stripes / 2
+    t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
+    lim_up = t0 + span
+    lim_dn = t0 - span
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_pulse(th_t[i], lim_up, lim_dn)
+    return seq
+
+# Swirling Stripes: gaussian waveform
+def swirl_03(tree, num_pts, num_frames):
+    x_t, y_t = tree[:, 0], tree[:, 1]
+    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    num_stripes = 6
+    span = 360 / num_stripes / 2
+    t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_gaussian(th_t[i], t0, span)
+    return seq
+
+# Swirling Stripes: decay waveform
+def swirl_04(tree, num_pts, num_frames):
+    x_t, y_t = tree[:, 0], tree[:, 1]
+    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    num_stripes = 6
+    span = 360 / num_stripes / 2
+    t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_decay_2(th_t[i], t0, span)
     return seq

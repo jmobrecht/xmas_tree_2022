@@ -12,9 +12,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation
 from mpl_toolkits.mplot3d import Axes3D
 os.chdir(r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmas_tree_2022')
-from fold.utils import set_axes_equal, get_tree_coords
-from fold.sequenc_utils import rainbow, moving_slice, falling_rain, spiral, cone_01, cone_02, blink_01, breathe_01, \
-    sparkle_01, wf_decay, sparkle_02, swirl_01
+from fold.utils import *
+from fold.sequenc_utils import *
 
 # Get tree coordinates
 path = r'C:\Users\john.obrecht\Downloads\xmastree2020-main\coords.txt'
@@ -31,7 +30,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = breathe_01(tree, num_pts, num_frames)
+seq = sparkle_02(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
