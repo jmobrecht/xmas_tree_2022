@@ -9,7 +9,10 @@ from scipy import signal
 ### Basic Functions
 
 def cosd(x):
-    return 2 * np.pi * x
+    return np.cos(x * np.pi / 180)
+
+def sind(x):
+    return np.sin(x * np.pi / 180)
 
 def dist(x, y, z, x0, y0, z0, i):
     return np.sqrt( (x - x0[i])**2 + (y - y0[i])**2 + (z - z0[i])**2)
@@ -47,6 +50,12 @@ def wf_decay(x, x0, tau):
     y = np.max((y, y2), axis=0)   
     return y
 
+def wf_gaussian(x):
+    pass
+
+def wf_pulse(x):
+    pass
+
 def rx(th):
     th *= np.pi / 180
     return np.array([[1, 0, 0], [0, np.cos(th), np.sin(th)], [0, -np.sin(th), np.cos(th)]])
@@ -58,6 +67,8 @@ def ry(th):
 def rz(th):
     th *= np.pi / 180
     return np.array([[np.cos(th), np.sin(th), 0], [-np.sin(th), np.cos(th), 0], [0, 0, 1]])
+
+#%% EFFECTS ###
 
 # Rainbow
 def rainbow(tree, num_pts, num_frames):
@@ -138,7 +149,7 @@ def blink_01(tree, num_pts, num_frames):
 # Breathing Tree
 def breathe_01(tree, num_pts, num_frames):
     period = 200
-    p = 4
+    p = 2
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     for i in range(num_frames):
         seq[:, 3, i] = (np.sin(2 * np.pi * i / period))**(2*p)  # Only change col. 3 (alpha value)
@@ -159,4 +170,20 @@ def sparkle_02(tree, num_pts, num_frames):
     for i in range(num_pts):
         seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
     return seq
-    
+
+# Swirling Stripes: vertical stripes on, then rotate all
+def swirl_01(tree, num_pts, num_frames):
+    x_t, y_t = tree[:, 0], tree[:, 1]
+    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    num_stripes = 6
+    span = 360 / num_stripes / 2
+    t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
+    lim_up = np.mod(t0 + span, 360)
+    lim_dn = np.mod(t0 - span, 360)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for i in range(num_frames):
+        upper, lower = lim_up[i], lim_dn[i]
+        filt = (upper > th_t) | (th_t > lower) if lower > upper else (upper > th_t) & (th_t > lower)
+        seq[filt, 3, i] = 1
+    return seq
