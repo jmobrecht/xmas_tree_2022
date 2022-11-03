@@ -2,6 +2,7 @@
 Created on Sat Oct 29 22:08:46 2022 @author: john.obrecht
 """
 
+import cv2
 import json
 import numpy as np
 
@@ -34,6 +35,7 @@ def set_axes_equal(ax):
     ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
     ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
 
+
 # Get tree coordinates from a file
 def get_tree_coords(file):
     f = open(file, 'r')
@@ -54,3 +56,16 @@ def get_tree_coords(file):
     tree = tree[np.argsort(tree[:, 2])]
 
     return tree
+
+
+def get_x_y(img, gx, idx_x, idx_y, thr):
+    g0 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    g0 = g0.astype(float)
+    g = g0 - gx
+    g[g<thr] = 0
+    sum_x = np.sum(g, axis=0)
+    sum_y = np.sum(g, axis=1)
+    sum_sum = np.sum(sum_y) + 1E-6
+    x = np.dot(sum_x, idx_y) / sum_sum
+    y = np.dot(sum_y, idx_x) / sum_sum
+    return x, y
