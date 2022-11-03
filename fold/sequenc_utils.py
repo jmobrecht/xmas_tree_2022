@@ -88,13 +88,32 @@ def rz(th):
 
 #%% EFFECTS ###
 
-# Rainbow
-def rainbow(tree, num_pts, num_frames):
+# Rainbow: horizontal falling
+def rainbow_01(tree, num_pts, num_frames):
+    slices = np.linspace(0, 1, num_frames)
+    bin_nums = np.digitize(tree[:, 2], slices, right=True)
     color_map = cm.get_cmap('hsv', num_pts)
+    rainbow = color_map(slices)
     seq = np.zeros([num_pts, 4, num_frames])
-    seq[:, :, 0] = color_map(np.linspace(0, 1, num_pts))
-    for i in range(num_frames):
-        seq[:, :, i] = np.roll(seq[:, :, i-1], 1, axis=0)
+    for i in range(num_pts):
+        b = bin_nums[i]
+        for j in range(num_frames):
+            seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
+    return seq
+
+# Rainbow: swirling vertical
+def rainbow_02(tree, num_pts, num_frames):
+    x_t, y_t = tree[:, 0], tree[:, 1]
+    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    slices = np.linspace(0, 1, num_frames)
+    bin_nums = np.digitize(th_t, 360 * slices, right=True)
+    color_map = cm.get_cmap('hsv', num_pts)
+    rainbow = color_map(slices)
+    seq = np.zeros([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        b = bin_nums[i]
+        for j in range(num_frames):
+            seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
     return seq
 
 # Slice
@@ -191,7 +210,7 @@ def sparkle_02(tree, num_pts, num_frames):
         seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
     return seq
 
-# Swirling Stripes: hard-coded pulse waveform
+# Swirling Vertical Stripes: hard-coded pulse waveform
 def swirl_01(tree, num_pts, num_frames):
     x_t, y_t = tree[:, 0], tree[:, 1]
     th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
@@ -208,7 +227,7 @@ def swirl_01(tree, num_pts, num_frames):
         seq[filt, 3, i] = 1
     return seq
 
-# Swirling Stripes: pulse waveform
+# Swirling Vertical Stripes: pulse waveform
 def swirl_02(tree, num_pts, num_frames):
     x_t, y_t = tree[:, 0], tree[:, 1]
     th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
@@ -223,7 +242,7 @@ def swirl_02(tree, num_pts, num_frames):
         seq[i, 3, :] = wf_pulse(th_t[i], lim_up, lim_dn)
     return seq
 
-# Swirling Stripes: gaussian waveform
+# Swirling Vertical Stripes: gaussian waveform
 def swirl_03(tree, num_pts, num_frames):
     x_t, y_t = tree[:, 0], tree[:, 1]
     th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
@@ -236,7 +255,7 @@ def swirl_03(tree, num_pts, num_frames):
         seq[i, 3, :] = wf_gaussian(th_t[i], t0, span)
     return seq
 
-# Swirling Stripes: decay waveform
+# Swirling Vertical Stripes: decay waveform
 def swirl_04(tree, num_pts, num_frames):
     x_t, y_t = tree[:, 0], tree[:, 1]
     th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
@@ -247,4 +266,18 @@ def swirl_04(tree, num_pts, num_frames):
     seq[:, 3, :] = 0
     for i in range(num_pts):
         seq[i, 3, :] = wf_decay_2(th_t[i], t0, span)
+    return seq
+
+# Rising Horizontal Stripes: pulse waveform
+def stripes_01(tree, num_pts, num_frames):
+    z_t = tree[:, 2]
+    num_stripes = 8
+    span = 1 / num_stripes / 2
+    z0 = np.linspace(0, 1, num_frames)  # Height rising linearly
+    lim_up = z0 + span
+    lim_dn = z0 - span
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_pulse(z_t[i], lim_up, lim_dn)
     return seq

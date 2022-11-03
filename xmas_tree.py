@@ -2,8 +2,6 @@
 Created on Sun Oct 23 11:12:29 2022 @author: john.obrecht
 """
 
-
-
 import re
 import os
 import numpy as np
@@ -30,7 +28,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = sparkle_02(tree, num_pts, num_frames)
+seq = rainbow_01(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
