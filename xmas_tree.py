@@ -28,7 +28,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = rainbow_01(tree, num_pts, num_frames)
+seq = rainbow_02(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01

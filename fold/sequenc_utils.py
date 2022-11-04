@@ -56,12 +56,12 @@ def wf_decay(x, x0, tau):
     return y
 
 # Decay through spatial coordinates
-def wf_decay_2(x, x0, tau):
-    x0 = 360 - x0
+def wf_decay_2(x, x0, tau, lim):
+    x0 = lim - x0
     y = np.zeros(np.shape(x0))
     y[x <= x0] = np.exp((x - x0[x <= x0]) / tau)
     # Handling the continuity past x = 1    
-    x2 = x0 + 360
+    x2 = x0 + lim
     y2 = y.copy()
     y2[x <= x2] = np.exp((x - x2[x <= x2]) / tau)
     y = np.max((y, y2), axis=0)  
@@ -114,14 +114,6 @@ def rainbow_02(tree, num_pts, num_frames):
         b = bin_nums[i]
         for j in range(num_frames):
             seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
-    return seq
-
-# Slice
-def moving_slice(tree, num_pts, num_frames):
-    z0 = np.linspace(1, 0, num_frames)
-    seq = np.ones([num_pts, 4, num_frames])
-    for i in range(num_frames):
-        seq[:, 3, i] = np.round(sheet(tree[:, 2], z0, i))
     return seq
 
 # Rain
@@ -212,13 +204,11 @@ def sparkle_02(tree, num_pts, num_frames):
 
 # Swirling Vertical Stripes: hard-coded pulse waveform
 def swirl_01(tree, num_pts, num_frames):
-    x_t, y_t = tree[:, 0], tree[:, 1]
-    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
     num_stripes = 6
     span = 360 / num_stripes / 2
     t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
-    lim_up = np.mod(t0 + span, 360)
-    lim_dn = np.mod(t0 - span, 360)
+    lim_up, lim_dn = np.mod(t0 + span, 360), np.mod(t0 - span, 360)
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_frames):
@@ -229,13 +219,11 @@ def swirl_01(tree, num_pts, num_frames):
 
 # Swirling Vertical Stripes: pulse waveform
 def swirl_02(tree, num_pts, num_frames):
-    x_t, y_t = tree[:, 0], tree[:, 1]
-    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
     num_stripes = 6
     span = 360 / num_stripes / 2
     t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
-    lim_up = t0 + span
-    lim_dn = t0 - span
+    lim_up, lim_dn = t0 + span, t0 - span
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_pts):
@@ -244,8 +232,7 @@ def swirl_02(tree, num_pts, num_frames):
 
 # Swirling Vertical Stripes: gaussian waveform
 def swirl_03(tree, num_pts, num_frames):
-    x_t, y_t = tree[:, 0], tree[:, 1]
-    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
     num_stripes = 6
     span = 360 / num_stripes / 2
     t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
@@ -257,27 +244,40 @@ def swirl_03(tree, num_pts, num_frames):
 
 # Swirling Vertical Stripes: decay waveform
 def swirl_04(tree, num_pts, num_frames):
-    x_t, y_t = tree[:, 0], tree[:, 1]
-    th_t = np.mod(180 / np.pi * np.arctan2(y_t, x_t), 360)
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
     num_stripes = 6
     span = 360 / num_stripes / 2
     t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_pts):
-        seq[i, 3, :] = wf_decay_2(th_t[i], t0, span)
+        seq[i, 3, :] = wf_decay_2(th_t[i], t0, span, 360)
     return seq
 
 # Rising Horizontal Stripes: pulse waveform
-def stripes_01(tree, num_pts, num_frames):
-    z_t = tree[:, 2]
+def slice_01(tree, num_pts, num_frames):
     num_stripes = 8
     span = 1 / num_stripes / 2
     z0 = np.linspace(0, 1, num_frames)  # Height rising linearly
-    lim_up = z0 + span
-    lim_dn = z0 - span
+    lim_up, lim_dn = z0 + span, z0 - span
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_pts):
-        seq[i, 3, :] = wf_pulse(z_t[i], lim_up, lim_dn)
+        seq[i, 3, :] = wf_pulse(tree[i, 2], lim_up, lim_dn)
+    return seq
+
+# Falling Horizontal Stripes: gaussian waveform
+def slice_02(tree, num_pts, num_frames):
+    z0 = np.linspace(1, 0, num_frames)
+    seq = np.ones([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_gaussian(tree[i, 2], z0, 0.01)
+    return seq
+
+# Falling Horizontal Stripes: decay waveform
+def melt_01(tree, num_pts, num_frames):
+    z0 = np.linspace(1, 0, num_frames)
+    seq = np.ones([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        seq[i, 3, :] = wf_decay_2(tree[i, 2], z0, 0.1, 1)
     return seq
