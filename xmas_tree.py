@@ -12,6 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D
 os.chdir(r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmas_tree_2022')
 from fold.utils import *
 from fold.sequenc_utils import *
+from fold.full_effects import *
 
 # Get tree coordinates
 path = r'C:\Users\john.obrecht\Downloads\xmastree2020-main\coords.txt'
@@ -28,7 +29,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = rainbow_02(tree, num_pts, num_frames)
+seq = falling_rain(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
@@ -48,3 +49,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
+np.save('seq', seq)
