@@ -9,18 +9,6 @@ import matplotlib.pyplot as plt
 from time import sleep
 from fold.utils import *
 
-#def get_x_y(img, gx, idx_x, idx_y, thr):
-#    g0 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#    g0 = g0.astype(float)
-#    g = g0 - gx
-#    g[g<thr] = 0
-#    sum_x = np.sum(g, axis=0)
-#    sum_y = np.sum(g, axis=1)
-#    sum_sum = np.sum(sum_y) + 1E-6
-#    x = np.dot(sum_x, idx_y) / sum_sum
-#    y = np.dot(sum_y, idx_x) / sum_sum
-#    return x, y
-
 # Camera properties
 camera = iio.get_reader('<video0>')
 meta = camera.get_meta_data()
@@ -29,7 +17,7 @@ delay = 1 / meta['fps']
 # LED properties
 rgb = (255, 255, 255)
 num_pixels = 50
-pixels = neopixel.NeoPixel(board.D18, num_pixels, brightness=1, pixel_order='RGB')
+pixels = neopixel.NeoPixel(board.D12, num_pixels, brightness=1, pixel_order='RGB')
 
 # Props
 sx, sy = (768, 1024)  # np.shape(g)

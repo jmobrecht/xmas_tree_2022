@@ -13,8 +13,8 @@ delay = 1 / meta['fps']
 
 # LED properties
 rgb = (255, 255, 255)
-num_pixels = 350
-pixels = neopixel.NeoPixel(board.D12, num_pixels, brightness=1, pixel_order='RGB')
+num_pixels = 50
+pixels = neopixel.NeoPixel(board.D18, num_pixels, brightness=1, pixel_order='RGB')
 
 # Variables
 d0 = 0.1 # Initial delay
