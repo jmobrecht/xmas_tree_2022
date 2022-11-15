@@ -7,8 +7,8 @@ df['pixel'] = df['pixel'].astype(str)
 df['y'] = -df['y']
 
 plt.figure(tight_layout=True, figsize=(5, 8))
-plt.plot(df['x'], df['y'], 'r.', markersize=4, linewidth=0.5, linestyle=':')
+plt.plot(df['x'], df['y'], 'r.', markersize=4, linewidth=0.0, linestyle=':')
 for i in range(len(df)):
-    plt.text(df['x'].iloc[i], df['y'].iloc[i], df['pixel'].iloc[i])
+    plt.text(df['x'].iloc[i], df['y'].iloc[i], df['pixel'].iloc[i], fontsize=6)
 plt.axis('equal')
 plt.show()

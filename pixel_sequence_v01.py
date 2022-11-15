@@ -16,14 +16,14 @@ delay = 1 / meta['fps']
 
 # LED properties
 rgb = (255, 255, 255)
-num_pixels = 50
+num_pixels = 650
 pixels = neopixel.NeoPixel(board.D12, num_pixels, brightness=1, pixel_order='RGB')
 
 # Props
 sx, sy = (768, 1024)  # np.shape(g)
 ind_x = np.arange(0, sx, 1)
 ind_y = np.arange(0, sy, 1)
-thr = 235
+thr = 220
 
 # Variables
 d0 = 1.1 # Initial delay
