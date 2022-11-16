@@ -30,7 +30,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = rainbow_00(tree, num_pts, num_frames)
+seq = sparkle_02(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
@@ -60,4 +60,4 @@ def convert_rgba_to_rgb(seq):
 
 rgb = convert_rgba_to_rgb(seq)
 
-np.save('repo/rainbow_00', rgb)
+np.save('repo/sparkle_02', rgb)
