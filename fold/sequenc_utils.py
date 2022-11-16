@@ -36,7 +36,7 @@ def falling_rain(tree, num_pts, num_frames):
         seq[:, 3, i] = point(x_t, y_t, z_t, x0, y0, z0, 0.05, i)  # Only change col. 3 (alpha value)
     return seq
 
-# Illuminate points near to cone surface only
+# Illuminate points near (threshold) to cone surface only
 def cone_01(tree, num_pts, num_frames):
     def dist(r, z, r_sc):
         return np.abs(r / r_sc + z - 1) / np.sqrt(1 + r_sc**-2)

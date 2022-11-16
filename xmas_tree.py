@@ -15,7 +15,7 @@ from fold.sequenc_utils import *
 from fold.full_effects import *
 
 # Get tree coordinates
-path = r'C:\Users\john.obrecht\Downloads\xmastree2020-main\coords.txt'
+path = r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmastree2020-main\coords.txt'
 tree = get_tree_coords(path)
 num_pts = len(tree)
 
@@ -29,7 +29,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = falling_rain(tree, num_pts, num_frames)
+seq = rainbow_02(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
@@ -49,4 +49,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('seq', seq)
+np.save('repo/rainbow_02', seq)
