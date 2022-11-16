@@ -30,7 +30,7 @@ def update_color(i):
 num_frames = 100
 
 # Load sequence
-seq = rainbow_01(tree, num_pts, num_frames)
+seq = rainbow_00(tree, num_pts, num_frames)
 
 # Animation frame rate: how fast the animation progresses through sequence
 frame_rate = 0.01
@@ -55,9 +55,9 @@ def convert_rgba_to_rgb(seq):
     a = seq[:, 3, :]
     rgb = np.zeros([num_pts, 3, num_frames])
     for i in range(3):
-        rgb[:, i, :] = 255 * a * seq[:, 0, :]
+        rgb[:, i, :] = 255 * a * seq[:, i, :]
     return rgb
 
 rgb = convert_rgba_to_rgb(seq)
 
-np.save('repo/rainbow_01', rgb)
+np.save('repo/rainbow_00', rgb)
