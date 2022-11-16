@@ -50,4 +50,14 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/rainbow_02', seq)
+
+def convert_rgba_to_rgb(seq):
+    a = seq[:, 3, :]
+    rgb = np.zeros([num_pts, 3, num_frames])
+    for i in range(3):
+        rgb[:, i, :] = 255 * a * seq[:, 0, :]
+    return rgb
+
+rgb = convert_rgba_to_rgb(seq)
+
+np.save('repo/rainbow_01', rgb)
