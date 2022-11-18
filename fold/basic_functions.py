@@ -72,9 +72,16 @@ def wf_decay_2(x, x0, tau, lim):
     y = np.max((y, y2), axis=0)  
     return y[::-1]
 
-def wf_pulse(x, xu, xl):
+def wf_pulse_th(x, xu, xl):
     y = np.zeros(np.shape(xu))
     y[(xu > x) & (x > xl)] = 1
     y[(xu > x + 360) & (x + 360 > xl)] = 1  # Edge case
     y[(xu > x - 360) & (x - 360 > xl)] = 1  # Edge case
+    return y
+
+def wf_pulse_x(x, xu, xl):
+    y = np.zeros(np.shape(x))
+    y[(xu > x) & (x > xl)] = 1
+    y[(xu > x + 1) & (x + 1 > xl)] = 1  # Edge case
+    y[(xu > x - 1) & (x - 1 > xl)] = 1  # Edge case
     return y

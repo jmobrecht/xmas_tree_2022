@@ -18,3 +18,4 @@ while True:
         pixels[:] = seq[:, :, j]
         pixels.show()
         sleep(0.01)
+
