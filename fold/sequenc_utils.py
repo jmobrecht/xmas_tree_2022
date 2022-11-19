@@ -60,41 +60,6 @@ def cone_02(tree, num_pts, num_frames):
         seq[:, 3, i] = a
     return seq
 
-# Blink all lights on / off
-def blink_01(tree, num_pts, num_frames):
-    blink = 25  # number of frames for on / off
-    filt = (np.mod(np.arange(num_frames), 2 * blink) < blink)
-    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    seq[:, :, filt] = 0* seq[:, :, filt]
-    return seq
-
-# Breathing Tree
-def breathe_01(tree, num_pts, num_frames):
-    period = 200
-    p = 2
-    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    for i in range(num_frames):
-        seq[:, 3, i] = (np.sin(2 * np.pi * i / period))**(2*p)  # Only change col. 3 (alpha value)
-    return seq
-
-# Sparkle: Triangle wave
-def sparkle_01(tree, num_pts, num_frames):
-    t = np.arange(0, num_frames)
-    phase = np.random.random(num_pts)
-    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    for i in range(num_pts):
-        seq[i, 3, :] = wf_triangle(t / num_frames, phase[i], 0.1)
-    return seq
-
-# Sparkle: Decay wave
-def sparkle_02(tree, num_pts, num_frames):
-    t = np.arange(0, num_frames)
-    phase = np.random.random(num_pts)
-    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    for i in range(num_pts):
-        seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
-    return seq
-
 # Swirling Vertical Stripes: hard-coded pulse waveform
 def swirl_01(tree, num_pts, num_frames):
     th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
@@ -120,7 +85,7 @@ def swirl_02(tree, num_pts, num_frames):
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_pts):
-        seq[i, 3, :] = wf_pulse(th_t[i], lim_up, lim_dn)
+        seq[i, 3, :] = wf_pulse_th(th_t[i], lim_up, lim_dn)
     return seq
 
 # Swirling Vertical Stripes: gaussian waveform
@@ -156,7 +121,7 @@ def slice_01(tree, num_pts, num_frames):
     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq[:, 3, :] = 0
     for i in range(num_pts):
-        seq[i, 3, :] = wf_pulse(tree[i, 2], lim_up, lim_dn)
+        seq[i, 3, :] = wf_pulse_th(tree[i, 2], lim_up, lim_dn)
     return seq
 
 # Falling Horizontal Stripes: gaussian waveform

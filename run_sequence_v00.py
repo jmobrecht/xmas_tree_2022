@@ -17,4 +17,9 @@ while True:
     for j in range(num_steps):
         pixels[:] = seq[:, :, j]
         pixels.show()
+<<<<<<< HEAD
         sleep(0.001)  # 0.5 good for rainbows... bad for breathe, sparkle
+=======
+        sleep(0.01)
+
+>>>>>>> 7e11f1d1efff73ad95c8e219eee5d32e5656ea71

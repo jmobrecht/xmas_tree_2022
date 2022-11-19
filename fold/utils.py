@@ -69,3 +69,12 @@ def get_x_y(img, gx, idx_x, idx_y, thr):
     x = np.dot(sum_x, idx_y) / sum_sum
     y = np.dot(sum_y, idx_x) / sum_sum
     return x, y
+
+
+def convert_rgba_to_rgb(seq):
+    a = seq[:, 3, :]
+    num_pts, _, num_frames = np.shape(seq)
+    rgb = np.zeros([num_pts, 3, num_frames])
+    for i in range(3):
+        rgb[:, i, :] = 255 * a * seq[:, i, :]
+    return rgb
