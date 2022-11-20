@@ -5,6 +5,7 @@ Created on Sat Oct 29 22:08:46 2022 @author: john.obrecht
 import cv2
 import json
 import numpy as np
+import pandas as pd
 
 # Set 3D Axes Equal - function
 def set_axes_equal(ax):
@@ -38,8 +39,11 @@ def set_axes_equal(ax):
 
 # Get tree coordinates from a file
 def get_tree_coords(file):
-    f = open(file, 'r')
-    tree = np.array(json.loads('[' + f.read().replace('\n', ',') + ']'), dtype='float')
+    # f = open(file, 'r')
+    # tree = np.array(json.loads('[' + f.read().replace('\n', ',') + ']'), dtype='float')
+
+    tree_0 = pd.read_csv(file)
+    tree = tree_0[['xp2', 'yp2', 'zp2']].values
     
     # Scale Z
     tree[:, 2] -= np.min(tree[:, 2])
