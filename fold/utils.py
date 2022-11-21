@@ -43,18 +43,18 @@ def get_tree_coords(file):
     # tree = np.array(json.loads('[' + f.read().replace('\n', ',') + ']'), dtype='float')
 
     tree_0 = pd.read_csv(file)
-    tree = tree_0[['xp2', 'yp2', 'zp2']].values
+    tree = tree_0[['x', 'y', 'z']].values
     
-    # Scale Z
-    tree[:, 2] -= np.min(tree[:, 2])
-    z_sc = np.max(tree[:, 2])
-    tree[:, 2] /= z_sc
+    # # Scale Z
+    # tree[:, 2] -= np.min(tree[:, 2])
+    # z_sc = np.max(tree[:, 2])
+    # tree[:, 2] /= z_sc
     
-    # Scale X & Y
-    tree[:, 0] -= np.mean(tree[:, 0])  # Center the x-direction
-    tree[:, 1] -= np.mean(tree[:, 1])  # Center the y-direction
-    tree[:, 0] /= z_sc  # Scale x by the same as z was scaled
-    tree[:, 1] /= z_sc  # Scale y by the same as z was scaled
+    # # Scale X & Y
+    # tree[:, 0] -= np.mean(tree[:, 0])  # Center the x-direction
+    # tree[:, 1] -= np.mean(tree[:, 1])  # Center the y-direction
+    # tree[:, 0] /= z_sc  # Scale x by the same as z was scaled
+    # tree[:, 1] /= z_sc  # Scale y by the same as z was scaled
     
     # Sort array order by column 2
     tree = tree[np.argsort(tree[:, 2])]
