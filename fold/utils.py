@@ -57,7 +57,7 @@ def get_tree_coords(file):
     # tree[:, 1] /= z_sc  # Scale y by the same as z was scaled
     
     # Sort array order by column 2
-    tree = tree[np.argsort(tree[:, 2])]
+    # tree = tree[np.argsort(tree[:, 2])]
 
     return tree
 
