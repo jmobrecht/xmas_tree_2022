@@ -23,12 +23,12 @@ num_pts = len(tree)
 
 #%% Animation
 
-rgb_warm = (252 / 255, 249 / 255, 217 / 255)  # (255, 244, 229)
+rgb_warm = (252 / 255, 197 / 255, 143 / 255)  # (255, 244, 229)
 
 # Load sequence
 # seq = rainbow_00(tree, num_pts, num_frames=250)
 # seq = rainbow_01(tree, num_pts, num_frames=250)
-seq = rainbow_02(tree, num_pts, num_frames=250)
+# seq = rainbow_02(tree, num_pts, num_frames=250)
 # seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
 # seq = blink_00(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = blink_01(tree, num_pts, num_frames=10)
@@ -41,7 +41,7 @@ seq = rainbow_02(tree, num_pts, num_frames=250)
 # seq = sparkle_02(tree, num_pts, num_frames=250, rgb=rgb_warm)
 # seq = sparkle_00_R(tree, num_pts, num_frames=250)
 # seq = sparkle_01_R(tree, num_pts, num_frames=250)
-# seq = sparkle_02_R(tree, num_pts, num_frames=250)
+seq = sparkle_02_R(tree, num_pts, num_frames=250)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -66,4 +66,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-# np.save('repo/sparkle_02_R', convert_rgba_to_rgb(seq))
+np.save('repo/sparkle_02_R', convert_rgba_to_rgb(seq))
