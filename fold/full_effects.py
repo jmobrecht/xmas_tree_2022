@@ -264,3 +264,167 @@ def sparkle_02_R(tree, num_pts, num_frames):
             seq[i, j, :] *= rainbow[i][j]
         seq[i, 3, :] = wf_decay(t / num_frames, phase[i], 0.15)
     return seq
+
+#%% Swirling Vertical Stripes: pulse waveform
+def stripes_V_00(tree, num_pts, num_frames, rgb, stripes=6, thickness=1):
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
+    span = 360 / stripes * thickness
+    t0 = np.linspace(0, 1, num_frames) * 360  # Theta circles X rotations
+    seq_a = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_b = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_a[:, 3, :] = 0
+    seq_b[:, 3, :] = 0
+    for i in range(num_pts):
+        pulse_a = np.zeros(num_frames)
+        pulse_b = np.zeros(num_frames)
+        for k in range(int(stripes / 2)):
+
+#             pulse_a += wf_pulse_th(th_t[i], t0 + (2 * k + 1) * span, t0 + (2 * k + 0) * span)
+#             pulse_b += wf_pulse_th(th_t[i], t0 + (2 * k + 2) * span, t0 + (2 * k + 1) * span)
+
+            pulse_a += wf_pulse_th(th_t[i], t0 + 360 * (2 * k + 0) / stripes + span, t0 + 360 * (2 * k + 0) / stripes)
+            pulse_b += wf_pulse_th(th_t[i], t0 + 360 * (2 * k + 1) / stripes + span, t0 + 360 * (2 * k + 1) / stripes)
+        seq_a[i, 3, :] = pulse_a
+        seq_b[i, 3, :] = pulse_b
+    for j in range(3):
+        seq_a[:, j, :] *= rgb[0][j]
+        seq_b[:, j, :] *= rgb[1][j]
+        seq_a[:, j, :] *= seq_a[:, 3, :]
+        seq_b[:, j, :] *= seq_b[:, 3, :]
+    seq = seq_a + seq_b
+    return seq
+
+#%% Falling Stripes: pulse waveform
+def stripes_H_00(tree, num_pts, num_frames, rgb, stripes=6, thickness=1):
+    span = 1 / stripes * thickness
+    z0 = np.linspace(1, 0, num_frames) # Height rising linearly
+    seq_a = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_b = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_a[:, 3, :] = 0
+    seq_b[:, 3, :] = 0
+    for i in range(num_pts):
+        pulse_a = np.zeros(num_frames)
+        pulse_b = np.zeros(num_frames)
+        for k in range(stripes):
+            pulse_a += wf_pulse_th(tree[i, 2], 1 + z0 - (2 * k + 0) / stripes, 1 + z0 - (2 * k + 0) / stripes - span)
+            pulse_b += wf_pulse_th(tree[i, 2], 1 + z0 - (2 * k + 1) / stripes, 1 + z0 - (2 * k + 1) / stripes - span)
+        seq_a[i, 3, :] = pulse_a
+        seq_b[i, 3, :] = pulse_b
+    for j in range(3):
+        seq_a[:, j, :] *= rgb[0][j]
+        seq_b[:, j, :] *= rgb[1][j]
+        seq_a[:, j, :] *= seq_a[:, 3, :]
+        seq_b[:, j, :] *= seq_b[:, 3, :]
+    seq = seq_a + seq_b
+    return seq
+
+#%% Alpha inversely proportional to distance to cone surface
+def cone_02(tree, num_pts, num_frames, rgb):
+    r_sc0 = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
+    r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
+    b = wf_triangle(np.arange(0, num_frames, 1), num_frames / 2, num_frames / 2)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(num_frames):
+        r_sc = b[i] * r_sc0
+        a = 1 - 4 * dist_cone_surface(r, tree[:, 2], r_sc) / r_sc0
+        a[a < 0] = 0
+        seq[:, 3, i] = a
+    for j in range(3):
+        seq[:, j, :] *= rgb[j]
+    return seq
+
+#%% Face
+def face_00(tree, num_pts, num_frames, rgb):
+    z_eyes = 0.55
+    r_eyes = 0.1
+    th_eyes = 90  # degrees
+    z_mouth = 0.33
+    r_mouth = 0.20
+    z_mouth_offset = 0.07
+    th_0 = 180  # degrees
+    r_sc = np.max(np.abs(tree[:, 0:2]))
+    t_surf = 0.1
+    # Eyes
+    rho_eyes = z_eyes * r_sc  # radial extent of eyes
+    eye = [0, rho_eyes, z_eyes]
+    eye_l = rz(th_0 - th_eyes / 2).dot(eye)
+    eye_r = rz(th_0 + th_eyes / 2).dot(eye)
+    # Mouth
+    z_mouth_0 = z_mouth + z_mouth_offset
+    rho_mouth_0 = z_mouth_0 * r_sc
+    mouth_0 = rz(th_0).dot([0, rho_mouth_0, z_mouth_0])    
+    d_eye_l = np.zeros(num_pts)
+    d_eye_r = np.zeros(num_pts)
+    d_mouth = np.zeros(num_pts)
+    for i in range(num_pts):
+        d_eye_l[i] = dist2(eye_l, tree[i, :])
+        d_eye_r[i] = dist2(eye_r, tree[i, :])
+        d_mouth[i] = dist2(mouth_0, tree[i, :])
+    r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
+    d_cs = dist_cone_surface(r, tree[:, 2], r_sc)
+    seq_a = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_b = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq_a[:, 3, :] = 0
+    for i in range(1, num_frames):
+        filt_mouth = (d_mouth < r_mouth) & (tree[:, 2] < z_mouth) & (d_cs < t_surf)
+        seq_a[filt_mouth, 3, i] = 1
+        seq_b[filt_mouth, 3, i] = 0
+        filt_eye_l = (d_eye_l < r_eyes) & (d_cs < t_surf)
+        seq_a[filt_eye_l, 3, i] = 1
+        seq_b[filt_eye_l, 3, i] = 0
+        filt_eye_r = (d_eye_r < r_eyes) & (d_cs < t_surf)
+        seq_a[filt_eye_r, 3, i] = 1
+        seq_b[filt_eye_r, 3, i] = 0
+    for j in range(3):
+        seq_a[:, j, :] *= rgb[0][j]
+        seq_b[:, j, :] *= rgb[1][j]
+        seq_a[:, j, :] *= seq_a[:, 3, :]
+        seq_b[:, j, :] *= seq_b[:, 3, :]
+    seq = seq_a + seq_b
+    return seq
+
+#%% Rain
+def rain_00(tree, num_pts, num_frames, drops=10):
+    x_t, y_t, z_t = tree[:, 0], tree[:, 1], tree[:, 2]
+    r_sc = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent    
+    ph_posr = np.random.random(3 * drops) * 0.5 + 0.5
+    ph_post = np.random.random(3 * drops) * 2 * np.pi
+    ph_posz = np.random.random(3 * drops) * 2 - 1
+    ph_size = np.random.random(3 * drops) * 0.04 + 0.04
+    z0 = np.linspace(1, 0, num_frames)  # Z falls from 1 to 0
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for k in range(3 * drops):
+        r0 = (1 - (z0 + ph_posz[k])) * r_sc * ph_posr[k]
+        r0[r0 < 0] = 0
+        p = [r0 * np.cos(ph_post[k]), r0 * np.sin(ph_post[k]), z0 + ph_posz[k]]
+        for i in range(1, num_frames):
+            d = dist(x_t, y_t, z_t, p[0], p[1], p[2], i)
+            seq[d < ph_size[k], 3, i] = 1  # Only change col. 3 (alpha value)
+    tmp = seq[:, 3, :]
+    tmp[tmp > 1] = 1
+    seq[:, 3, :] = tmp
+    return seq
+
+#%% Rain
+def rain_01(tree, num_pts, num_frames, drops=10):
+    x_t, y_t, z_t = tree[:, 0], tree[:, 1], tree[:, 2]
+    r_sc = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent    
+    ph_posr = np.random.random(3 * drops) * 0.5 + 0.5
+    ph_post = np.random.random(3 * drops) * 2 * np.pi
+    ph_posz = np.random.random(3 * drops) * 2 - 1
+    ph_size = np.random.random(3 * drops) * 0.04 + 0.04
+    z0 = np.linspace(1, 0, num_frames)  # Z falls from 1 to 0
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for k in range(3 * drops):
+        r0 = (1 - (z0 + ph_posz[k])) * r_sc * ph_posr[k]
+        r0[r0 < 0] = 0
+        p = [r0 * np.cos(ph_post[k]), r0 * np.sin(ph_post[k]), z0 + ph_posz[k]]
+        for i in range(1, num_frames):
+            a = np.round(point(x_t, y_t, z_t, p[0], p[1], p[2], ph_size[k], i), 3)
+            seq[:, 3, i] += a  # Only change col. 3 (alpha value)
+    tmp = seq[:, 3, :]
+    tmp[tmp > 1] = 1
+    seq[:, 3, :] = tmp
+    return seq

@@ -28,7 +28,7 @@ rgb_warm = (252 / 255, 197 / 255, 143 / 255)  # (255, 244, 229)
 # Load sequence
 # seq = rainbow_00(tree, num_pts, num_frames=250)
 # seq = rainbow_01(tree, num_pts, num_frames=250)
-seq = rainbow_02(tree, num_pts, num_frames=250)
+# seq = rainbow_02(tree, num_pts, num_frames=250)
 # seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
 # seq = blink_00(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = blink_01(tree, num_pts, num_frames=10)
@@ -43,6 +43,13 @@ seq = rainbow_02(tree, num_pts, num_frames=250)
 # seq = sparkle_01_R(tree, num_pts, num_frames=250)
 # seq = sparkle_02_R(tree, num_pts, num_frames=250)
 
+# seq = stripes_V_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
+# seq = stripes_H_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
+# seq = cone_02(tree, num_pts, num_frames=250, rgb=rgb_warm)
+# seq = face_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (0.6,0.6,0.6)))
+# seq = rain_00(tree, num_pts, num_frames=250, drops=10)
+seq = rain_01(tree, num_pts, num_frames=250, drops=12)
+
 def update_color(i):
     graph._facecolors = seq[:, :, i]
     title.set_text('Frame: {} of {}'.format(i, num_frames))
@@ -51,11 +58,11 @@ def update_color(i):
 frame_rate = 0.01
 num_pts, _, num_frames = np.shape(seq)
 
-fig = plt.figure()
+fig = plt.figure(tight_layout=True, figsize=(9,9))
 ax = fig.add_subplot(111, projection='3d')
 ax.set_facecolor((0.2, 0.2, 0.2))
 title = ax.set_title('3D Test')
-graph = ax.scatter(tree[:, 0], tree[:, 1], tree[:, 2], s=4, c = seq[:, :, 0])
+graph = ax.scatter(tree[:, 0], tree[:, 1], tree[:, 2], s=18, c = seq[:, :, 0])
 graph._offsets3d = (tree[:, 0], tree[:, 1], tree[:, 2])
 ax.set_xlim(np.min(tree[:, 0]), np.max(tree[:, 0]))
 ax.set_ylim(np.min(tree[:, 1]), np.max(tree[:, 1]))
@@ -66,4 +73,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/rainbow_02', convert_rgba_to_rgb(seq))
+# np.save('repo/rain_01', convert_rgba_to_rgb(seq))

@@ -25,6 +25,12 @@ def rz(th):
 def dist(x, y, z, x0, y0, z0, i):
     return np.sqrt( (x - x0[i])**2 + (y - y0[i])**2 + (z - z0[i])**2)
 
+def dist2(p0, p1):
+    return np.sqrt( (p0[0] - p1[0])**2 + (p0[1] - p1[1])**2 + (p0[2] - p1[2])**2)
+
+def dist_cone_surface(r, z, r_sc):
+    return np.abs(r / r_sc + z - 1) / np.sqrt(1 + r_sc**-2)
+
 def point(x, y, z, x0, y0, z0, sz, i):
     return np.exp(-(dist(x, y, z, x0, y0, z0, i))**2 / sz**2)
 
