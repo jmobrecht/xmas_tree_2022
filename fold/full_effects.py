@@ -341,7 +341,7 @@ def face_00(tree, num_pts, num_frames, rgb):
     z_mouth = 0.33
     r_mouth = 0.20
     z_mouth_offset = 0.07
-    th_0 = 180  # degrees
+    th_0 = 345  # degrees
     r_sc = np.max(np.abs(tree[:, 0:2]))
     t_surf = 0.1
     # Eyes
@@ -365,7 +365,7 @@ def face_00(tree, num_pts, num_frames, rgb):
     seq_a = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq_b = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
     seq_a[:, 3, :] = 0
-    for i in range(1, num_frames):
+    for i in range(num_frames):
         filt_mouth = (d_mouth < r_mouth) & (tree[:, 2] < z_mouth) & (d_cs < t_surf)
         seq_a[filt_mouth, 3, i] = 1
         seq_b[filt_mouth, 3, i] = 0

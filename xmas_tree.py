@@ -46,9 +46,9 @@ rgb_warm = (252 / 255, 197 / 255, 143 / 255)  # (255, 244, 229)
 # seq = stripes_V_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
 # seq = stripes_H_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
 # seq = cone_02(tree, num_pts, num_frames=250, rgb=rgb_warm)
-# seq = face_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (0.6,0.6,0.6)))
+seq = face_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (0.6,0.6,0.6)))
 # seq = rain_00(tree, num_pts, num_frames=250, drops=10)
-seq = rain_01(tree, num_pts, num_frames=250, drops=12)
+# seq = rain_01(tree, num_pts, num_frames=250, drops=12)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -73,4 +73,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-# np.save('repo/rain_01', convert_rgba_to_rgb(seq))
+np.save('repo/face_00', convert_rgba_to_rgb(seq))
