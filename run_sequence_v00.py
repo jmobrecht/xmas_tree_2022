@@ -4,22 +4,32 @@ Created on Tue Nov 15 21:09:07 2022 @author: john.obrecht
 
 import board
 import neopixel
-from matplotlib import cm
+import argparse
 import numpy as np
+from matplotlib import cm
 from time import sleep
 
-seq = np.load('repo/sparkle_02.npy')
-num_pixels, _, num_steps = np.shape(seq)
+def run_sequence(effect, brightness, delay):
+    print(effect)
+    print(brightness)
+    print(delay)
+    seq = np.load('repo/' + effect + '.npy')
+    num_pixels, _, num_steps = np.shape(seq)
+    pixels = neopixel.NeoPixel(board.D12, 650, brightness=brightness, pixel_order='RGB')       
+    while True:
+        for j in range(num_steps):
+            pixels[:] = seq[:, :, j]
+            pixels.show()
+            sleep(delay)
 
-pixels = neopixel.NeoPixel(board.D12, 650, brightness=1, pixel_order='RGB')
+parser = argparse.ArgumentParser()
+parser.add_argument('--effect', default = 'rainbow_01', type = str)
+parser.add_argument('--brightness', default = 1, type = float)
+parser.add_argument('--delay', default = 0.001, type = float)
 
-while True:
-    for j in range(num_steps):
-        pixels[:] = seq[:, :, j]
-        pixels.show()
-<<<<<<< HEAD
-        sleep(0.001)  # 0.5 good for rainbows... bad for breathe, sparkle
-=======
-        sleep(0.01)
+if __name__ == '__main__':
+    args = parser.parse_args()
+else:
+    args = parser.parse_args('')
 
->>>>>>> 7e11f1d1efff73ad95c8e219eee5d32e5656ea71
+run_sequence(args.effect, args.brightness, args.delay)
