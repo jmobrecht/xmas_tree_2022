@@ -38,27 +38,32 @@ def set_axes_equal(ax):
 
 
 # Get tree coordinates from a file
-def get_tree_coords(file):
-    # f = open(file, 'r')
-    # tree = np.array(json.loads('[' + f.read().replace('\n', ',') + ']'), dtype='float')
+def get_tree_coords_0(file):
 
-    tree_0 = pd.read_csv(file)
-    tree = tree_0[['x', 'y', 'z']].values
+    f = open(file, 'r')
+    tree = np.array(json.loads('[' + f.read().replace('\n', ',') + ']'), dtype='float')
     
-    # # Scale Z
-    # tree[:, 2] -= np.min(tree[:, 2])
-    # z_sc = np.max(tree[:, 2])
-    # tree[:, 2] /= z_sc
+    # Scale Z
+    tree[:, 2] -= np.min(tree[:, 2])
+    z_sc = np.max(tree[:, 2])
+    tree[:, 2] /= z_sc
     
-    # # Scale X & Y
-    # tree[:, 0] -= np.mean(tree[:, 0])  # Center the x-direction
-    # tree[:, 1] -= np.mean(tree[:, 1])  # Center the y-direction
-    # tree[:, 0] /= z_sc  # Scale x by the same as z was scaled
-    # tree[:, 1] /= z_sc  # Scale y by the same as z was scaled
+    # Scale X & Y
+    tree[:, 0] -= np.mean(tree[:, 0])  # Center the x-direction
+    tree[:, 1] -= np.mean(tree[:, 1])  # Center the y-direction
+    tree[:, 0] /= z_sc  # Scale x by the same as z was scaled
+    tree[:, 1] /= z_sc  # Scale y by the same as z was scaled
     
-    # Sort array order by column 2
+    # # Sort array order by column 2
     # tree = tree[np.argsort(tree[:, 2])]
 
+    return tree
+
+
+# Get tree coordinates from a file
+def get_tree_coords(file):
+    tree_0 = pd.read_csv(file)
+    tree = tree_0[['x', 'y', 'z']].values
     return tree
 
 

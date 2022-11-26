@@ -16,19 +16,20 @@ from fold.full_effects import *
 
 # Get tree coordinates
 # path = r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmastree2020-main\coords.txt'
-# tree = get_tree_coords(path)
+# tree = get_tree_coords_0(path)
 # tree = np.concatenate([tree, tree[:150, :]], axis=0)
 tree = get_tree_coords('Master_Output.csv')
 num_pts = len(tree)
 
 #%% Animation
 
-rgb_warm = (252 / 255, 197 / 255, 143 / 255)  # (255, 244, 229)
+rgb_warm = tuple(x / 255 for x in [252, 210, 133])
 
 # Load sequence
+# seq = all_on(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = rainbow_00(tree, num_pts, num_frames=250)
 # seq = rainbow_01(tree, num_pts, num_frames=250)
-# seq = rainbow_02(tree, num_pts, num_frames=250)
+seq = rainbow_02(tree, num_pts, num_frames=250)
 # seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
 # seq = blink_00(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = blink_01(tree, num_pts, num_frames=10)
@@ -42,11 +43,9 @@ rgb_warm = (252 / 255, 197 / 255, 143 / 255)  # (255, 244, 229)
 # seq = sparkle_00_R(tree, num_pts, num_frames=250)
 # seq = sparkle_01_R(tree, num_pts, num_frames=250)
 # seq = sparkle_02_R(tree, num_pts, num_frames=250)
-
 # seq = stripes_V_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
 # seq = stripes_H_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (1,1,1)), stripes=6, thickness=1)
-# seq = cone_02(tree, num_pts, num_frames=250, rgb=rgb_warm)
-seq = face_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (0.6,0.6,0.6)))
+# seq = face_00(tree, num_pts, num_frames=250, rgb=((1,0,0), (0.6,0.6,0.6)))
 # seq = rain_00(tree, num_pts, num_frames=250, drops=10)
 # seq = rain_01(tree, num_pts, num_frames=250, drops=12)
 
@@ -73,4 +72,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/face_00', convert_rgba_to_rgb(seq))
+# np.save('repo/rainbow_vomit', convert_rgba_to_rgb(seq))

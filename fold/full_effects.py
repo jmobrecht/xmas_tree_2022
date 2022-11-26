@@ -8,6 +8,13 @@ from matplotlib import cm
 from fold.basic_functions import *
 
 #%% Rainbow: Uniform color change
+def all_on(tree, num_pts, num_frames, rgb):
+    seq = np.ones([num_pts, 4, num_frames])
+    for i in range(3):
+        seq[:, i, :] *= rgb[i]
+    return seq
+
+#%% Rainbow: Uniform color change
 def rainbow_00(tree, num_pts, num_frames):
     slices = np.linspace(0, 1, num_frames)
     color_map = cm.get_cmap('hsv', num_frames)
@@ -319,26 +326,26 @@ def stripes_H_00(tree, num_pts, num_frames, rgb, stripes=6, thickness=1):
     return seq
 
 #%% Alpha inversely proportional to distance to cone surface
-def cone_02(tree, num_pts, num_frames, rgb):
-    r_sc0 = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
-    r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
-    b = wf_triangle(np.arange(0, num_frames, 1), num_frames / 2, num_frames / 2)
-    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-    for i in range(num_frames):
-        r_sc = b[i] * r_sc0
-        a = 1 - 4 * dist_cone_surface(r, tree[:, 2], r_sc) / r_sc0
-        a[a < 0] = 0
-        seq[:, 3, i] = a
-    for j in range(3):
-        seq[:, j, :] *= rgb[j]
-    return seq
+# def cone_02(tree, num_pts, num_frames, rgb):
+#     r_sc0 = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
+#     r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
+#     b = wf_triangle(np.arange(0, num_frames, 1), num_frames / 2, num_frames / 2)
+#     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+#     for i in range(num_frames):
+#         r_sc = b[i] * r_sc0
+#         a = 1 - 4 * dist_cone_surface(r, tree[:, 2], r_sc) / r_sc0
+#         a[a < 0] = 0
+#         seq[:, 3, i] = a
+#     for j in range(3):
+#         seq[:, j, :] *= rgb[j]
+#     return seq
 
 #%% Face
 def face_00(tree, num_pts, num_frames, rgb):
-    z_eyes = 0.55
+    z_eyes = 0.50
     r_eyes = 0.1
     th_eyes = 90  # degrees
-    z_mouth = 0.33
+    z_mouth = 0.30
     r_mouth = 0.20
     z_mouth_offset = 0.07
     th_0 = 345  # degrees
