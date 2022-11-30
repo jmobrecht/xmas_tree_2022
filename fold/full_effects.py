@@ -51,6 +51,43 @@ def rainbow_02(tree, num_pts, num_frames):
             seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
     return seq
 
+#%% Twilight: Uniform color change
+def twilight_00(tree, num_pts, num_frames):
+    slices = np.linspace(0, 1, num_frames)
+    color_map = cm.get_cmap('twilight', num_frames)
+    rainbow = color_map(slices)
+    seq = np.zeros([num_pts, 4, num_frames])
+    for i in range(num_frames):
+        seq[:, :, i] = rainbow[i]
+    return seq
+
+#%% Twilight: Vertical gradient color change
+def twilight_01(tree, num_pts, num_frames):
+    slices = np.linspace(0, 1, num_frames)
+    bin_nums = np.digitize(tree[:, 2], slices, right=True)
+    color_map = cm.get_cmap('twilight', num_pts)
+    rainbow = color_map(slices)
+    seq = np.zeros([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        b = bin_nums[i]
+        for j in range(num_frames):
+            seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
+    return seq
+
+#%% Twilight: Radial gradient color change
+def twilight_02(tree, num_pts, num_frames):
+    th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
+    slices = np.linspace(0, 1, num_frames)
+    bin_nums = np.digitize(th_t, 360 * slices, right=True)
+    color_map = cm.get_cmap('twilight', num_pts)
+    rainbow = color_map(slices)
+    seq = np.zeros([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        b = bin_nums[i]
+        for j in range(num_frames):
+            seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
+    return seq
+
 #%% Three-Arm Point-Spiral
 def spiral_02(tree, num_pts, num_frames, rgb):
     x_t, y_t, z_t = tree[:, 0], tree[:, 1], tree[:, 2]
