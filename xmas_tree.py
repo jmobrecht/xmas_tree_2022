@@ -15,10 +15,10 @@ from fold.sequenc_utils import *
 from fold.full_effects import *
 
 # Get tree coordinates
-# path = r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmastree2020-main\coords.txt'
-# tree = get_tree_coords_0(path)
-# tree = np.concatenate([tree, tree[:150, :]], axis=0)
-tree = get_tree_coords('Master_Output.csv')
+path = r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmastree2020-main\coords.txt'
+tree = get_tree_coords_0(path)
+tree = np.concatenate([tree, tree[:150, :]], axis=0)
+# tree = get_tree_coords('Master_Output.csv')
 num_pts = len(tree)
 
 #%% Animation
@@ -27,9 +27,9 @@ rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 
 # Load sequence
 # seq = all_on(tree, num_pts, num_frames=10, rgb=rgb_warm)
-seq = rainbow_00(tree, num_pts, num_frames=100)
+# seq = rainbow_00(tree, num_pts, num_frames=100)
 # seq = rainbow_01(tree, num_pts, num_frames=100)
-# seq = rainbow_02(tree, num_pts, num_frames=100)
+seq = rainbow_02(tree, num_pts, num_frames=100)
 # seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
 # seq = blink_00(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = blink_01(tree, num_pts, num_frames=10)
@@ -51,7 +51,7 @@ seq = rainbow_00(tree, num_pts, num_frames=100)
 
 # seq = twilight_00(tree, num_pts, num_frames=100)
 # seq = twilight_01(tree, num_pts, num_frames=100)
-seq = twilight_02(tree, num_pts, num_frames=100)
+# seq = twilight_02(tree, num_pts, num_frames=100)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -76,4 +76,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/twilight_02', convert_rgba_to_rgb(seq))
+# np.save('repo/rainbow_vomit_ultra', convert_rgba_to_rgb(seq))
