@@ -49,9 +49,9 @@ seq = rainbow_00(tree, num_pts, num_frames=100)
 # seq = rain_00(tree, num_pts, num_frames=250, drops=10)
 # seq = rain_01(tree, num_pts, num_frames=250, drops=12)
 
-# seq = twilight_00(tree, num_pts, num_frames=250)
-# seq = twilight_01(tree, num_pts, num_frames=250)
-# seq = twilight_02(tree, num_pts, num_frames=250)
+# seq = twilight_00(tree, num_pts, num_frames=100)
+# seq = twilight_01(tree, num_pts, num_frames=100)
+seq = twilight_02(tree, num_pts, num_frames=100)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -76,4 +76,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/rainbow_00', convert_rgba_to_rgb(seq))
+np.save('repo/twilight_02', convert_rgba_to_rgb(seq))
