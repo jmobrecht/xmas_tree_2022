@@ -10,9 +10,7 @@ from matplotlib import cm
 from time import sleep
 
 def run_sequence(effect, brightness, delay):
-    print(effect)
-    print(brightness)
-    print(delay)
+
     seq = np.load('repo/' + effect + '.npy')
     num_pixels, _, num_steps = np.shape(seq)
     pixels = neopixel.NeoPixel(board.D12, 650, brightness=brightness, pixel_order='RGB')       

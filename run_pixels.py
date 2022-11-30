@@ -40,13 +40,13 @@ def rainbow_cycle_2(wait, steps, num_pixels, xp):
         pixels.show()
         sleep(wait)
 
-steps = 650
-color_map = cm.get_cmap('hsv', steps)
-x = color_map(np.linspace(0, 1, steps))
-xp = 255 * x[:, 0:3]
-while True:
-    rainbow_cycle_2(0.1, steps, 650, xp)
-#run_first_x_pixels(650, (255, 255, 255))
+#steps = 650
+#color_map = cm.get_cmap('hsv', steps)
+#x = color_map(np.linspace(0, 1, steps))
+#xp = 255 * x[:, 0:3]
+#while True:
+#    rainbow_cycle_2(0.1, steps, 650, xp)
+run_first_x_pixels(650, (255, 170, 70))
 #run_pixel_x(10, (255, 255, 255))
 #run_all((255, 255, 255))
 #all_off()
