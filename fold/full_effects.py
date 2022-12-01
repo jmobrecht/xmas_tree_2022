@@ -37,11 +37,25 @@ def rainbow_01(tree, num_pts, num_frames):
             seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
     return seq
 
-#%% Rainbow: Radial gradient color change
+#%% Rainbow: Angular gradient color change
 def rainbow_02(tree, num_pts, num_frames):
     th_t = np.mod(180 / np.pi * np.arctan2(tree[:, 1], tree[:, 0]), 360)
     slices = np.linspace(0, 1, num_frames)
     bin_nums = np.digitize(th_t, 360 * slices, right=True)
+    color_map = cm.get_cmap('hsv', num_pts)
+    rainbow = color_map(slices)
+    seq = np.zeros([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        b = bin_nums[i]
+        for j in range(num_frames):
+            seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
+    return seq
+
+#%% Rainbow: Radial gradient color change
+def rainbow_03(tree, num_pts, num_frames):
+    rh = np.sqrt(tree[:, 1]**2 + tree[:, 0]**2)
+    slices = np.linspace(1, 0, num_frames)
+    bin_nums = np.digitize(rh, slices, right=True)
     color_map = cm.get_cmap('hsv', num_pts)
     rainbow = color_map(slices)
     seq = np.zeros([num_pts, 4, num_frames])
