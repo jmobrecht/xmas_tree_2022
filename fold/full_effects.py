@@ -95,7 +95,7 @@ def spiral_02(tree, num_pts, num_frames, rgb):
     r0 = r_sc * np.linspace(0, 1, num_frames)  # R moves from 0 (at top) to outside at bottom
     r1 = np.roll(r0, int(num_frames / 3))
     r2 = np.roll(r0, int(2 * num_frames / 3))
-    th0 = np.linspace(0, 2, num_frames) * 360  # Theta circles X rotations
+    th0 = np.linspace(0, 6, num_frames) * 360  # Theta circles X rotations
     th1 = np.mod(th0 + 120, 360)
     th2 = np.mod(th0 + 240, 360)
     x0, y0 = np.zeros(num_frames), np.zeros(num_frames)

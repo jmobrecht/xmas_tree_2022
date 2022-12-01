@@ -26,11 +26,11 @@ num_pts = len(tree)
 rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 
 # Load sequence
-seq = all_on(tree, num_pts, num_frames=10, rgb=(0.5,1,1))
+# seq = all_on(tree, num_pts, num_frames=10, rgb=(0.1,1,1))
 # seq = rainbow_00(tree, num_pts, num_frames=100)
 # seq = rainbow_01(tree, num_pts, num_frames=100)
 # seq = rainbow_02(tree, num_pts, num_frames=100)
-# seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
+seq = spiral_02(tree, num_pts, num_frames=250, rgb=((1,0,0), (0,1,0), (1,1,1)))
 # seq = blink_00(tree, num_pts, num_frames=10, rgb=rgb_warm)
 # seq = blink_01(tree, num_pts, num_frames=10)
 # seq = blink_02(tree, num_pts, num_frames=10, rgb=((1,0,0), (0,1,0), (1,1,1)))
@@ -76,4 +76,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/all_on_frost', convert_rgba_to_rgb(seq))
+np.save('repo/spiral_01', convert_rgba_to_rgb(seq))
