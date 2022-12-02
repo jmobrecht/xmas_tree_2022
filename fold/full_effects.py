@@ -265,6 +265,17 @@ def sparkle_01(tree, num_pts, num_frames, rgb):
         seq[i, 3, :] = wf_triangle(t / num_frames, phase[i], 0.15)
     return seq
 
+#%% Sparkle: Reverse Triangle wave
+def sparkle_01b(tree, num_pts, num_frames, rgb):
+    t = np.arange(0, num_frames)
+    phase = np.random.random(num_pts)
+    seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    for i in range(3):
+        seq[:, i, :] *= rgb[i]
+    for i in range(num_pts):
+        seq[i, 3, :] = 1 - wf_triangle(t / num_frames, phase[i], 0.15)
+    return seq
+
 #%% Sparkle: Decay wave
 def sparkle_02(tree, num_pts, num_frames, rgb):
     t = np.arange(0, num_frames)
