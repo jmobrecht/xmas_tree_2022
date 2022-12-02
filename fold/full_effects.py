@@ -65,6 +65,17 @@ def rainbow_03(tree, num_pts, num_frames):
             seq[i, :, j] = rainbow[np.mod(b + j, num_frames)]
     return seq
 
+#%% Sparkle: Pulse wave
+def rainbow_random(tree, num_pts, num_frames):
+    slices = np.linspace(1, 0, num_frames)
+    ph = np.round(np.random.random(num_pts) * 255, 0).astype(int)
+    color_map = cm.get_cmap('hsv', num_pts)
+    rainbow = color_map(slices)
+    seq = np.ones([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        seq[i, 0:2, :] = np.transpose(np.roll(rainbow[:, 0:2], ph[i]))
+    return seq
+
 #%% Twilight: Uniform color change
 def twilight_00(tree, num_pts, num_frames):
     slices = np.linspace(0, 1, num_frames)
@@ -520,4 +531,44 @@ def rain_01(tree, num_pts, num_frames, drops=10):
     tmp = seq[:, 3, :]
     tmp[tmp > 1] = 1
     seq[:, 3, :] = tmp
+    return seq
+
+#%% Fill tree
+def fill_00(tree, num_pts, num_frames):
+    slices = np.linspace(0.02, 1.02, 100)
+    bin_nums = np.digitize(tree[:, 2], slices, right=True)
+    color_map = cm.get_cmap('jet', num_pts)
+    rainbow = color_map(slices)
+    z1 = np.linspace(0, 1, num_frames) # Height rising linearly
+    z2 = z1[::-1]
+    seq1 = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq1[:, 3, :] = 0
+    for j in range(num_pts):
+        b = bin_nums[j]
+        for k in range(3):
+            seq1[j, k, :] = rainbow[b, k]
+        for i in range(num_frames):
+            seq1[tree[:, 2] < z1[i], 3, i] = 1
+    seq2 = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq2[:, 3, :] = 0
+    for j in range(num_pts):
+        b = bin_nums[j]
+        for k in range(3):
+            seq2[j, k, :] = rainbow[b, k]
+        for i in range(num_frames):
+            seq2[tree[:, 2] < z2[i], 3, i] = 1
+    seq = np.concatenate([seq1, seq2], axis=2)
+    return seq
+
+#%% Fill tree 2
+def fill_02(tree, num_pts):
+    slices = np.arange(0, num_pts, 1)
+    color_map = cm.get_cmap('rainbow', num_pts)
+    rainbow = color_map(slices)
+    seq = np.ones([num_pts, 4, num_pts])  # Start all white (1, 1, 1, 1)
+    seq[:, 3, :] = 0
+    for j in range(num_pts):
+        for k in range(3):
+            seq[j, k, :] = rainbow[j, k]
+        seq[:j, 3, j] = 1
     return seq
