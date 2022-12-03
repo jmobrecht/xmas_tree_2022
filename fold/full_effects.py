@@ -537,7 +537,7 @@ def rain_01(tree, num_pts, num_frames, drops=10):
 def fill_00(tree, num_pts, num_frames):
     slices = np.linspace(0.02, 1.02, 100)
     bin_nums = np.digitize(tree[:, 2], slices, right=True)
-    color_map = cm.get_cmap('jet', num_pts)
+    color_map = cm.get_cmap('bwr', num_pts)
     rainbow = color_map(slices)
     z1 = np.linspace(0, 1, num_frames) # Height rising linearly
     z2 = z1[::-1]
@@ -557,7 +557,24 @@ def fill_00(tree, num_pts, num_frames):
             seq2[j, k, :] = rainbow[b, k]
         for i in range(num_frames):
             seq2[tree[:, 2] < z2[i], 3, i] = 1
-    seq = np.concatenate([seq1, seq2], axis=2)
+    rainbow = color_map(slices[::-1])
+    seq3 = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq3[:, 3, :] = 0
+    for j in range(num_pts):
+        b = bin_nums[j]
+        for k in range(3):
+            seq3[j, k, :] = rainbow[b, k]
+        for i in range(num_frames):
+            seq3[tree[:, 2] < z1[i], 3, i] = 1
+    seq4 = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
+    seq4[:, 3, :] = 0
+    for j in range(num_pts):
+        b = bin_nums[j]
+        for k in range(3):
+            seq4[j, k, :] = rainbow[b, k]
+        for i in range(num_frames):
+            seq4[tree[:, 2] < z2[i], 3, i] = 1
+    seq = np.concatenate([seq1, seq2, seq3, seq4], axis=2)
     return seq
 
 #%% Fill tree 2
