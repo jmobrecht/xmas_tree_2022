@@ -20,10 +20,9 @@ from fold.full_effects import *
 # tree = np.concatenate([tree, tree[:150, :]], axis=0)
 tree = get_tree_coords('Master_Output.csv')
 num_pts = len(tree)
+rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 
 #%% Animation
-
-rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 
 # Load sequence
 # seq = all_on(tree, num_pts, num_frames=10, rgb=(0.1,1,1))
@@ -56,8 +55,9 @@ rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 # seq = twilight_00(tree, num_pts, num_frames=100)
 # seq = twilight_01(tree, num_pts, num_frames=100)
 # seq = twilight_02(tree, num_pts, num_frames=100)
-seq = fill_00(tree, num_pts, num_frames=100)
+# seq = fill_00(tree, num_pts, num_frames=100)
 # seq = fill_02(tree, num_pts)
+seq = camoflage_rainbow(tree, num_pts, num_frames=200)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -82,4 +82,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/fill_01', convert_rgba_to_rgb(seq))
+np.save('repo/camoflage_rainbow', convert_rgba_to_rgb(seq))

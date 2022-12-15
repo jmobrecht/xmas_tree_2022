@@ -6,6 +6,7 @@ import random
 import numpy as np
 from matplotlib import cm
 from fold.basic_functions import *
+from scipy.interpolate import RegularGridInterpolator
 
 #%% Rainbow: Uniform color change
 def all_on(tree, num_pts, num_frames, rgb):
@@ -588,4 +589,54 @@ def fill_02(tree, num_pts):
         for k in range(3):
             seq[j, k, :] = rainbow[j, k]
         seq[:j, 3, j] = 1
+    return seq
+
+#%% Camoflage: Rainbow
+def camoflage_rainbow(tree, num_pts, num_frames):
+    # Z-pos
+    d_z = 1 / 101
+    z_max = 3
+    z = np.arange(0, z_max, d_z)
+    d_z = z[1] - z[0]
+    freq_max = 2 / d_z
+    num_pts_z = len(z)
+    num_pts_half_z = int((num_pts_z + 1) / 2)
+    # Z-freq
+    freq_z = np.linspace(0, freq_max, num_pts_z)
+    freq1_z = freq_z[:num_pts_half_z]
+    # XY-pos
+    xy_max = 0.35
+    x = np.arange(-xy_max, xy_max, d_z)
+    num_pts_xy = len(x)
+    num_pts_half_xy = int((num_pts_xy + 1) / 2)
+    # XY-freq
+    freq_xy = np.linspace(0, freq_max, num_pts_xy)
+    freq1_xy = freq_xy[:num_pts_half_xy]
+    # 3D
+    w3 = 1 / 30 * freq_max
+    freqX, freqY, freqZ = np.meshgrid(freq1_xy, freq1_xy, freq1_z)
+    freq_amp_all_1 = gaussian_3d(freqX, freqY, freqZ, w3)
+    tmp_x = np.concatenate([freq_amp_all_1, freq_amp_all_1[1:, :, :][::-1, :, :]])
+    tmp_y = np.concatenate([tmp_x, tmp_x[:, 1:, :][:, ::-1, :]], axis=1)
+    tmp_z = np.concatenate([tmp_y, tmp_y[:, :, 1:][:, :, ::-1]], axis=2)
+    ph_z = np.random.random(np.shape(tmp_z)) * np.pi
+    freq_complex_3d = tmp_z * np.exp(-1j * ph_z)
+    field = np.real(np.fft.ifftn(freq_complex_3d))
+    field = np.concatenate([field, field], axis=2)
+    # Scale field
+    field -= np.min(field)
+    field /= (np.max(field) / 100)
+    # Interpolation
+    zp = np.concatenate([z, z + z_max])
+    fn = RegularGridInterpolator((x, x, zp), field)
+    # Mapping field onto tree points
+    step_size = z_max / num_frames
+    tree[tree[:, 2] > 1, 2] = 1
+    tree[tree[:, 2] < 0, 2] = 0
+    color_map = cm.get_cmap('rainbow', 100)
+    seq = np.ones([num_pts, 4, num_frames])
+    for j in range(num_frames):
+        for i in range(num_pts):
+            seq[i, :3, j] = color_map(int(fn(tree[i, :3])))[:3]
+        tree[:, 2] += step_size
     return seq

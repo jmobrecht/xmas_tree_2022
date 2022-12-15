@@ -91,3 +91,6 @@ def wf_pulse_x(x, xu, xl):
     y[(xu > x + 1) & (x + 1 > xl)] = 1  # Edge case
     y[(xu > x - 1) & (x - 1 > xl)] = 1  # Edge case
     return y
+
+def gaussian_3d(fx, fy, fz, s):
+    return np.exp(-(fx**2 + fy**2 + fz**2) / s**2)
