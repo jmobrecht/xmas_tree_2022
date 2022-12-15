@@ -82,4 +82,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/camoflage_rainbow', convert_rgba_to_rgb(seq))
+np.save('repo/camoflage_rainbow_04', convert_rgba_to_rgb(seq))
