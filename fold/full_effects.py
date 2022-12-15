@@ -633,7 +633,7 @@ def camoflage_rainbow(tree, num_pts, num_frames):
     step_size = z_max / num_frames
     tree[tree[:, 2] > 1, 2] = 1
     tree[tree[:, 2] < 0, 2] = 0
-    color_map = cm.get_cmap('rainbow', 100)
+    color_map = cm.get_cmap('hsv', 100)
     seq = np.ones([num_pts, 4, num_frames])
     for j in range(num_frames):
         for i in range(num_pts):
