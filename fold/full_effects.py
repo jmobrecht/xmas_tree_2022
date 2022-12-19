@@ -641,3 +641,23 @@ def camoflage_rainbow(tree, num_pts, num_frames):
             seq[i, :3, j] = color_map(int(fn(tree[i, :3])))[:3]
         tree[:, 2] += step_size
     return seq
+
+#%% Random gradual change
+# num_pts = 650
+# rgb = ((1,1,1), (1,0,0))
+def gradual_00(tree, num_pts, num_frames, rgb):
+# if 1:
+    group = 5
+    num_frames = int(num_pts / group)
+    nums = np.arange(num_pts)
+    np.random.shuffle(nums)
+    seq_a = np.ones([num_pts, 4, num_frames])
+    seq_b = np.ones([num_pts, 4, num_frames])
+    for k in range(3):
+        seq_a[:, k, :num_frames_half] *= rgb[0][k]
+        seq_b[:, k, :num_frames_half] *= rgb[1][k]
+    for i in range(num_frames):
+        seq_a[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[1]).reshape((1, 3, 1)), (group, 1, num_frames-i))
+        seq_b[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[0]).reshape((1, 3, 1)), (group, 1, num_frames-i))
+    seq = np.concatenate([seq_a, seq_b], axis=2)
+    return seq     

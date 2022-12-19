@@ -57,7 +57,8 @@ rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 # seq = twilight_02(tree, num_pts, num_frames=100)
 # seq = fill_00(tree, num_pts, num_frames=100)
 # seq = fill_02(tree, num_pts)
-seq = camoflage_rainbow(tree, num_pts, num_frames=200)
+# seq = camoflage_rainbow(tree, num_pts, num_frames=200)
+seq = gradual_00(tree, num_pts, num_frames=None, rgb=((1,1,1), (0,0,0)))
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -82,4 +83,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/camoflage_rainbow_04', convert_rgba_to_rgb(seq))
+np.save('repo/gradual_k', convert_rgba_to_rgb(seq))
