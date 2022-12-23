@@ -383,10 +383,6 @@ def stripes_V_00(tree, num_pts, num_frames, rgb, stripes=6, thickness=1):
         pulse_a = np.zeros(num_frames)
         pulse_b = np.zeros(num_frames)
         for k in range(int(stripes / 2)):
-
-#             pulse_a += wf_pulse_th(th_t[i], t0 + (2 * k + 1) * span, t0 + (2 * k + 0) * span)
-#             pulse_b += wf_pulse_th(th_t[i], t0 + (2 * k + 2) * span, t0 + (2 * k + 1) * span)
-
             pulse_a += wf_pulse_th(th_t[i], t0 + 360 * (2 * k + 0) / stripes + span, t0 + 360 * (2 * k + 0) / stripes)
             pulse_b += wf_pulse_th(th_t[i], t0 + 360 * (2 * k + 1) / stripes + span, t0 + 360 * (2 * k + 1) / stripes)
         seq_a[i, 3, :] = pulse_a
@@ -422,21 +418,6 @@ def stripes_H_00(tree, num_pts, num_frames, rgb, stripes=6, thickness=1):
         seq_b[:, j, :] *= seq_b[:, 3, :]
     seq = seq_a + seq_b
     return seq
-
-#%% Alpha inversely proportional to distance to cone surface
-# def cone_02(tree, num_pts, num_frames, rgb):
-#     r_sc0 = np.max(np.abs(tree[:, 0:2]))  # Radial scale = largest radial extent
-#     r = np.sqrt(tree[:, 0]**2 + tree[:, 1]**2)
-#     b = wf_triangle(np.arange(0, num_frames, 1), num_frames / 2, num_frames / 2)
-#     seq = np.ones([num_pts, 4, num_frames])  # Start all white (1, 1, 1, 1)
-#     for i in range(num_frames):
-#         r_sc = b[i] * r_sc0
-#         a = 1 - 4 * dist_cone_surface(r, tree[:, 2], r_sc) / r_sc0
-#         a[a < 0] = 0
-#         seq[:, 3, i] = a
-#     for j in range(3):
-#         seq[:, j, :] *= rgb[j]
-#     return seq
 
 #%% Face
 def face_00(tree, num_pts, num_frames, rgb):
@@ -660,4 +641,30 @@ def gradual_00(tree, num_pts, num_frames, rgb):
         seq_a[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[1]).reshape((1, 3, 1)), (group, 1, num_frames-i))
         seq_b[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[0]).reshape((1, 3, 1)), (group, 1, num_frames-i))
     seq = np.concatenate([seq_a, seq_b], axis=2)
-    return seq     
+    return seq
+
+#%% Stacked Coins
+def coins(tree, num_pts, num_frames):
+    slices = 16
+    # slices = 7
+    th = 1 / slices
+    num_frames_total = num_frames * slices
+    layers = np.linspace(1, 0, slices)
+    color_map = cm.get_cmap('gist_rainbow_r', slices)  # cool, gist_rainbow_r
+    rainbow = color_map(layers)[:, :3]
+    # rainbow = np.ones((slices, 3))  # ALL WHITE
+    # rainbow = np.array([(1,0,0), (1,1,1), (0,1,0), (1,1,1), (1,0,0), (1,1,1), (0,1,0)])
+    seq = np.zeros([num_pts, 4, num_frames_total])
+    z0L = np.linspace(1, 0, num_frames)
+    z0U = z0L + th
+    for k in range(slices):
+        for i in range(k * num_frames, (k + 1) * num_frames):
+            ip = i - k * num_frames
+            filt0 = (tree[:, 2] < z0U[ip]) & (tree[:, 2] >= z0L[ip]) & (tree[:, 2] > k * th)
+            seq[filt0, :3, i] = np.tile(rainbow[k, :], (np.sum(filt0), 1))
+            seq[filt0, 3, i] = 1
+        freeze_frame = int(np.floor(num_frames * (k + 1 - k / slices)))
+        filt1 = (tree[:, 2] >= k * th) & (tree[:, 2] < (k + 1) * th)
+        seq[filt1, :3, freeze_frame:] = np.tile(np.reshape(rainbow[k, :], (1, 3, 1)), (np.sum(filt1), 1, num_frames_total - freeze_frame))
+        seq[filt1, 3, freeze_frame:] = 1
+    return seq
