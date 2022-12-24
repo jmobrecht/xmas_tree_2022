@@ -624,8 +624,6 @@ def camoflage_rainbow(tree, num_pts, num_frames):
     return seq
 
 #%% Random gradual change
-# num_pts = 650
-# rgb = ((1,1,1), (1,0,0))
 def gradual_00(tree, num_pts, num_frames, rgb):
 # if 1:
     group = 5
@@ -648,23 +646,45 @@ def coins(tree, num_pts, num_frames):
     slices = 16
     # slices = 7
     th = 1 / slices
-    num_frames_total = num_frames * slices
     layers = np.linspace(1, 0, slices)
     color_map = cm.get_cmap('gist_rainbow_r', slices)  # cool, gist_rainbow_r
     rainbow = color_map(layers)[:, :3]
     # rainbow = np.ones((slices, 3))  # ALL WHITE
     # rainbow = np.array([(1,0,0), (1,1,1), (0,1,0), (1,1,1), (1,0,0), (1,1,1), (0,1,0)])
-    seq = np.zeros([num_pts, 4, num_frames_total])
     z0L = np.linspace(1, 0, num_frames)
     z0U = z0L + th
+    seq = np.zeros([num_pts, 4, 1])  # Initialize an empty timestamp
+    freeze_frame = list([1])
+    # Descending slices
     for k in range(slices):
-        for i in range(k * num_frames, (k + 1) * num_frames):
-            ip = i - k * num_frames
-            filt0 = (tree[:, 2] < z0U[ip]) & (tree[:, 2] >= z0L[ip]) & (tree[:, 2] > k * th)
-            seq[filt0, :3, i] = np.tile(rainbow[k, :], (np.sum(filt0), 1))
-            seq[filt0, 3, i] = 1
-        freeze_frame = int(np.floor(num_frames * (k + 1 - k / slices)))
+        stop_frame = int((1 - k / slices) * num_frames)
+        seq_i = np.zeros([num_pts, 4, stop_frame])
+        for i in range(stop_frame):
+            filt0 = (tree[:, 2] < z0U[i]) & (tree[:, 2] >= z0L[i]) # & (tree[:, 2] > k * th)
+            seq_i[filt0, :3, i] = np.tile(rainbow[k, :], (np.sum(filt0), 1))
+            seq_i[filt0, 3, i] = 1
+        seq = np.concatenate((seq, seq_i), axis=2)
+        freeze_frame.append(freeze_frame[k] + stop_frame)
+    # Freeze slices in place
+    for k in range(slices):
         filt1 = (tree[:, 2] >= k * th) & (tree[:, 2] < (k + 1) * th)
-        seq[filt1, :3, freeze_frame:] = np.tile(np.reshape(rainbow[k, :], (1, 3, 1)), (np.sum(filt1), 1, num_frames_total - freeze_frame))
-        seq[filt1, 3, freeze_frame:] = 1
+        seq[filt1, :3, freeze_frame[k + 1]:] = np.tile(np.reshape(rainbow[k, :], (1, 3, 1)), (np.sum(filt1), 1, np.shape(seq)[2] - freeze_frame[k + 1]))
+        seq[filt1, 3, stop_frame:] = 1
+    # Hold Final Frame
+    num_frames_hold = 50
+    seq_i = np.tile(np.reshape(seq[:, :, -1], (num_pts, 4, 1)), (1, 1, num_frames_hold))
+    seq = np.concatenate((seq, seq_i), axis=2)
+    
+    # Flush the rainbow down
+    rainbow = np.concatenate([rainbow, np.ones([slices, 1])], axis=1)
+    rainbow = np.concatenate([rainbow, np.array([[0,0,0,0]])], axis=0)
+    num_frames_flush = 20
+    z0F = np.linspace(0, 1, num_frames_flush)
+    seq_i = np.ones([num_pts, 4, num_frames_flush])
+    for i in range(num_frames_flush):
+        tree_layers = np.digitize(tree[:, 2], np.linspace(0, 1, slices) - z0F[i])
+        for j in range(num_pts):
+            seq_i[j, :, i] = rainbow[tree_layers[j]]
+    seq = np.concatenate((seq, seq_i), axis=2)
     return seq
+    
