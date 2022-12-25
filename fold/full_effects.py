@@ -605,8 +605,11 @@ def camoflage_rainbow(tree, num_pts, num_frames):
     field = np.real(np.fft.ifftn(freq_complex_3d))
     field = np.concatenate([field, field], axis=2)
     # Scale field
-    field -= np.min(field)
-    field /= (np.max(field) / 100)
+    clip = 0.1
+    field -= np.quantile(field, clip)
+    field /= (np.quantile(field, 1 - clip) / 100)
+    field[field < 0] = 0
+    field[field > 100] = 100
     # Interpolation
     zp = np.concatenate([z, z + z_max])
     fn = RegularGridInterpolator((x, x, zp), field)
@@ -615,7 +618,7 @@ def camoflage_rainbow(tree, num_pts, num_frames):
     tree[tree[:, 2] > 1, 2] = 1
     tree[tree[:, 2] < 0, 2] = 0
     # color_map = cm.get_cmap('hsv', 100)
-    color_map = cm.get_cmap('seismic', 100)
+    color_map = cm.get_cmap('bone', 100)  # jet, seismic, bone
     seq = np.ones([num_pts, 4, num_frames])
     for j in range(num_frames):
         for i in range(num_pts):

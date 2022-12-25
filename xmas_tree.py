@@ -15,6 +15,7 @@ from fold.sequenc_utils import *
 from fold.full_effects import *
 
 # Get tree coordinates
+
 # path = r'C:\Users\john.obrecht\OneDrive - envision\Documents\GitHub\xmastree2020-main\coords.txt'
 # tree = get_tree_coords_0(path)
 # tree = np.concatenate([tree, tree[:150, :]], axis=0)
@@ -57,9 +58,9 @@ rgb_warm = tuple(x / 255 for x in [255, 170, 70])
 # seq = twilight_02(tree, num_pts, num_frames=100)
 # seq = fill_00(tree, num_pts, num_frames=100)
 # seq = fill_02(tree, num_pts)
-# seq = camoflage_rainbow(tree, num_pts, num_frames=200)
+seq = camoflage_rainbow(tree, num_pts, num_frames=200)
 # seq = gradual_00(tree, num_pts, num_frames=None, rgb=((1,1,0), (0,0,1)))
-seq = coins(tree, num_pts, num_frames=100)
+# seq = coins(tree, num_pts, num_frames=100)
 
 def update_color(i):
     graph._facecolors = seq[:, :, i]
@@ -84,4 +85,4 @@ ani = matplotlib.animation.FuncAnimation(fig, update_color, num_frames, interval
 plt.show()
 
 # ani.save('rainbow.gif')
-np.save('repo/coins_03', convert_rgba_to_rgb(seq))
+np.save('repo/camoflage_rainbow_002', convert_rgba_to_rgb(seq))
