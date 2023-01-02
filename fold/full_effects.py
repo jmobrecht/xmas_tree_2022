@@ -7,6 +7,7 @@ import numpy as np
 from matplotlib import cm
 from fold.basic_functions import *
 from scipy.interpolate import RegularGridInterpolator
+from matplotlib.colors import LinearSegmentedColormap
 
 #%% Rainbow: Uniform color change
 def all_on(tree, num_pts, num_frames, rgb):
@@ -642,6 +643,17 @@ def gradual_00(tree, num_pts, num_frames, rgb):
         seq_a[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[1]).reshape((1, 3, 1)), (group, 1, num_frames-i))
         seq_b[nums[i * group:(i+1) * group], :3, i:] = np.tile(np.array(rgb[0]).reshape((1, 3, 1)), (group, 1, num_frames-i))
     seq = np.concatenate([seq_a, seq_b], axis=2)
+    return seq
+
+#%% Random sinusoidal change
+def gradual_S_00(tree, num_pts, num_frames, rgb):
+    cm = LinearSegmentedColormap.from_list("Custom", rgb, N=1000)
+    sine = 0.5 * np.sin(2 * np.pi * np.linspace(0, 1, num_frames)) + 0.5
+    gradient = cm(sine)[:, :3]
+    ph = np.random.randint(0, num_frames, num_pts)
+    seq = np.ones([num_pts, 4, num_frames])
+    for i in range(num_pts):
+        seq[i, :3, :] = np.transpose(np.roll(gradient[:, :3], ph[i], axis=0))
     return seq
 
 #%% Stacked Coins
